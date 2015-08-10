@@ -2,6 +2,7 @@ import collections
 
 import toml
 from dcos import util
+from dcos.errors import DCOSException
 
 
 def mutable_load_from_path(path):
@@ -14,7 +15,11 @@ def mutable_load_from_path(path):
     """
 
     with util.open_file(path) as config_file:
-        return MutableToml(toml.loads(config_file.read()))
+        try:
+            return MutableToml(toml.loads(config_file.read()))
+        except Exception as e:
+            raise DCOSException(
+                'Error parsing config file at [{}]: {}'.format(path, e))
 
 
 def load_from_path(path):
@@ -27,7 +32,11 @@ def load_from_path(path):
     """
 
     with util.open_file(path) as config_file:
-        return Toml(toml.loads(config_file.read()))
+        try:
+            return Toml(toml.loads(config_file.read()))
+        except Exception as e:
+            raise DCOSException(
+                'Error parsing config file at [{}]: {}'.format(path, e))
 
 
 def _get_path(config, path):
